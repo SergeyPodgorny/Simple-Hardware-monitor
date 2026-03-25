@@ -12,6 +12,7 @@ public partial class MainWindow : Window
 {
     private readonly HardwareMonitorService _hardwareMonitorService;
     private readonly NetworkService _networkService;
+    private readonly TrayService _trayService;
     private readonly DispatcherTimer _timer;
 
     // WinAPI click-through
@@ -37,6 +38,8 @@ public partial class MainWindow : Window
         _hardwareMonitorService = new HardwareMonitorService();
         _networkService = new NetworkService();
         _networkService.Initialize();
+        _trayService = new TrayService();
+        _trayService.Initialize();
 
         // Таймер обновления
         _timer = new DispatcherTimer
@@ -79,6 +82,7 @@ public partial class MainWindow : Window
         _timer.Stop();
         _hardwareMonitorService.Dispose();
         _networkService.Dispose();
+        _trayService.Dispose();
         base.OnClosed(e);
     }
 }

@@ -51,7 +51,7 @@ public class HardwareMonitorService : IDisposable
                 s.SensorType == SensorType.Clock &&
                 s.Name.Contains("Core", StringComparison.OrdinalIgnoreCase) &&
                 s.Value.HasValue)
-            .Select(s => s.Value.Value);
+            .Select(s => s.Value!.Value);
 
         return new CpuStats
         {
