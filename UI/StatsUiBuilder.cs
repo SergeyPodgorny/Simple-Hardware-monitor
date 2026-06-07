@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using TempsOverlay.Models;
+using TempsOverlay;
 
 namespace TempsOverlay.UI;
 
@@ -37,7 +38,7 @@ public static class StatsUiBuilder
         if (cpu.Temperature.HasValue)
             AddLine(panel, $"CPU Temp: {cpu.Temperature.Value:0} °C");
 
-        if (cpu.AverageClock.HasValue)
+        if (RuntimeSettings.ShowCpuFrequency && cpu.AverageClock.HasValue)
             AddLine(panel, $"CPU Clock: {cpu.AverageClock.Value:0} MHz");
     }
 
@@ -47,11 +48,11 @@ public static class StatsUiBuilder
             AddLine(panel, $"{gpu.Name}: {gpu.Temperature.Value:0} °C");
     }
 
-    private static void AddStorage(StackPanel panel, StorageStats storage)
-    {
-        AddLine(panel, $"{storage.Name}: {storage.Temperature:0} °C");
-    }
-
+private static void AddStorage(StackPanel panel, StorageStats storage)
+        {
+            if (!RuntimeSettings.ShowDiskTemp) return;
+            AddLine(panel, $"{storage.Name}: {storage.Temperature:0} °C");
+        }
     private static void AddNetwork(StackPanel panel, NetworkStats network)
     {
         AddLine(panel, $"NET ↓ {network.DownloadSpeedMbps:0.00} MB/s ↑ {network.UploadSpeedMbps:0.00} MB/s");

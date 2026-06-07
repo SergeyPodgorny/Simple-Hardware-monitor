@@ -6,6 +6,9 @@ using System.Windows.Threading;
 using TempsOverlay.Services;
 using TempsOverlay.UI;
 
+using TempsOverlay;
+
+
 namespace TempsOverlay;
 
 public partial class MainWindow : Window
@@ -58,13 +61,14 @@ public partial class MainWindow : Window
         var networkStats = _networkService.GetStats();
 
         // Объединяем статистику сети с аппаратной
-        var combinedStats = new Models.HardwareStats
-        {
-            Cpu = hardwareStats.Cpu,
-            Gpus = hardwareStats.Gpus,
-            Storages = hardwareStats.Storages,
-            Network = networkStats
-        };
+                var combinedStats = new Models.HardwareStats
+                {
+                    Cpu = hardwareStats.Cpu,
+                    Gpus = hardwareStats.Gpus,
+                    Storages = hardwareStats.Storages,
+                    Network = RuntimeSettings.ShowNetworkSpeed ? networkStats : null
+                };
+
 
         StatsUiBuilder.RenderStats(Panel, combinedStats);
     }
