@@ -8,11 +8,13 @@ using TempsOverlay.UI;
 
 using TempsOverlay;
 
-
 namespace TempsOverlay;
 
 public partial class MainWindow : Window
 {
+    // Reference for TrayService to toggle visibility.
+    public static MainWindow? Instance { get; private set; }
+
     private readonly HardwareMonitorService _hardwareMonitorService;
     private readonly NetworkService _networkService;
     private readonly TrayService _trayService;
@@ -32,6 +34,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Instance = this!;
 
         // Позиция (правый верхний угол)
         Left = SystemParameters.WorkArea.Width - Width - 10;
@@ -55,20 +58,27 @@ public partial class MainWindow : Window
         Loaded += (_, _) => EnableClickThrough();
     }
 
+    public void ToggleVisibility()
+    {
+        if (this.IsVisible)
+            this.Hide();
+        else
+            this.Show();
+    }
+
     private void UpdateStats()
     {
         var hardwareStats = _hardwareMonitorService.GetStats();
         var networkStats = _networkService.GetStats();
 
         // Объединяем статистику сети с аппаратной
-                var combinedStats = new Models.HardwareStats
-                {
-                    Cpu = hardwareStats.Cpu,
-                    Gpus = hardwareStats.Gpus,
-                    Storages = hardwareStats.Storages,
-                    Network = RuntimeSettings.ShowNetworkSpeed ? networkStats : null
-                };
-
+        var combinedStats = new Models.HardwareStats
+        {
+            Cpu = hardwareStats.Cpu,
+            Gpus = hardwareStats.Gpus,
+            Storages = hardwareStats.Storages,
+            Network = RuntimeSettings.ShowNetworkSpeed ? networkStats : null
+        };
 
         StatsUiBuilder.RenderStats(Panel, combinedStats);
     }
@@ -77,7 +87,6 @@ public partial class MainWindow : Window
     {
         var hwnd = new WindowInteropHelper(this).Handle;
         int style = GetWindowLong(hwnd, GWL_EXSTYLE);
-
         SetWindowLong(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED | WS_EX_TRANSPARENT);
     }
 
