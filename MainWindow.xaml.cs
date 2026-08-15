@@ -3,10 +3,10 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using TempsOverlay.Services;
+
 using TempsOverlay.UI;
 
-using TempsOverlay;
+
 
 namespace TempsOverlay;
 
@@ -17,7 +17,7 @@ public partial class MainWindow : Window
 
     private readonly HardwareMonitorService _hardwareMonitorService;
     private readonly NetworkService _networkService;
-    private readonly TrayService _trayService;
+
     private readonly DispatcherTimer _timer;
 
     // WinAPI click-through
@@ -44,8 +44,7 @@ public partial class MainWindow : Window
         _hardwareMonitorService = new HardwareMonitorService();
         _networkService = new NetworkService();
         _networkService.Initialize();
-        _trayService = new TrayService();
-        _trayService.Initialize();
+
 
         // Таймер обновления
         _timer = new DispatcherTimer
@@ -58,13 +57,7 @@ public partial class MainWindow : Window
         Loaded += (_, _) => EnableClickThrough();
     }
 
-    public void ToggleVisibility()
-    {
-        if (this.IsVisible)
-            this.Hide();
-        else
-            this.Show();
-    }
+
 
     private void UpdateStats()
     {
@@ -95,7 +88,7 @@ public partial class MainWindow : Window
         _timer.Stop();
         _hardwareMonitorService.Dispose();
         _networkService.Dispose();
-        _trayService.Dispose();
+
         base.OnClosed(e);
     }
 }
