@@ -38,7 +38,7 @@ public static class StatsUiBuilder
         if (cpu.Temperature.HasValue)
             AddLine(panel, $"CPU Temp: {cpu.Temperature.Value:0} °C");
 
-        if (RuntimeSettings.ShowCpuFrequency && cpu.AverageClock.HasValue)
+        if (!RuntimeSettings.GameMode && RuntimeSettings.ShowCpuFrequency && cpu.AverageClock.HasValue)
             AddLine(panel, $"CPU Clock: {cpu.AverageClock.Value:0} MHz");
     }
 

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
-
+using TempsOverlay.Services;
 using TempsOverlay.UI;
 
 
@@ -12,13 +12,16 @@ namespace TempsOverlay;
 
 public partial class MainWindow : Window
 {
-    // Reference for TrayService to toggle visibility.
+    // Entry point used by TrayIconService to toggle visibility and to signal a real exit.
     public static MainWindow? Instance { get; private set; }
 
     private readonly HardwareMonitorService _hardwareMonitorService;
     private readonly NetworkService _networkService;
 
     private readonly DispatcherTimer _timer;
+
+    // True when Exit was requested from the tray menu - allows the window to close for real.
+    private bool _exiting;
 
     // WinAPI click-through
     private const int GWL_EXSTYLE = -20;
@@ -69,8 +72,8 @@ public partial class MainWindow : Window
         {
             Cpu = hardwareStats.Cpu,
             Gpus = hardwareStats.Gpus,
-            Storages = hardwareStats.Storages,
-            Network = RuntimeSettings.ShowNetworkSpeed ? networkStats : null
+            Storages = RuntimeSettings.GameMode ? Array.Empty<Models.StorageStats>() : hardwareStats.Storages,
+            Network = !RuntimeSettings.GameMode && RuntimeSettings.ShowNetworkSpeed ? networkStats : null
         };
 
         StatsUiBuilder.RenderStats(Panel, combinedStats);
@@ -81,6 +84,26 @@ public partial class MainWindow : Window
         var hwnd = new WindowInteropHelper(this).Handle;
         int style = GetWindowLong(hwnd, GWL_EXSTYLE);
         SetWindowLong(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+    }
+
+    public bool IsOverlayVisible => Visibility == Visibility.Visible;
+
+    public void ShowOverlay() => Show();
+
+    public void HideOverlay() => Hide();
+
+    // Called by TrayIconService before Application.Shutdown so OnClosing lets the window close.
+    internal void PrepareExit() => _exiting = true;
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        if (!_exiting)
+        {
+            e.Cancel = true;
+            Hide();
+        }
+
+        base.OnClosing(e);
     }
 
     protected override void OnClosed(EventArgs e)

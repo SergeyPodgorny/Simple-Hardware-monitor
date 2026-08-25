@@ -7,5 +7,7 @@ namespace TempsOverlay
         /// <summary>Whether disk (storage) temperatures are shown.</summary>
         public static bool ShowDiskTemp { get; set; } = true;
         public static bool ShowCpuFrequency { get; set; } = true;
+        /// <summary>Whether game mode is active - only CPU and GPU temperatures are shown.</summary>
+        public static bool GameMode { get; set; }
         }
         }
