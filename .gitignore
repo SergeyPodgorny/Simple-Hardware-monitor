@@ -1,6 +1,3 @@
-# Игнорировать всё
-*
-
 # Разрешить исходники
 !*.cs
 !*.xaml
@@ -30,6 +27,10 @@ packages/
 *.user
 *.DotSettings.user
 _ReSharper*/
+
+# AI
+*.opencode
+*openspec
 
 # Публикация
 publish/
